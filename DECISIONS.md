@@ -55,6 +55,7 @@ Storage/display units follow the METAR convention the user forecasts in: °F, hP
 - **Fair mode**: compared models for a (site, var) are the models with *any* pair for it in the window; a (valid, lead bin) key is kept only if every compared model has a pair there. Both modes are always computed and shipped; the page labels which is showing. `test_fair_mode_changes_ranking` proves the mask changes a ranking on synthetic data; `scripts/acceptance.py` reports real cells where it flips.
 - Explorer regime slices are pre-aggregated for any single dimension (incl. month) and any pair of dimensions. A third simultaneous filter is disabled in the UI rather than served — full 5-way crossing would be ~1 M cells.
 - Trust Today ladder: full regime → drop sky → drop flow → drop season → day/night only → all. A step is accepted when **≥ 2 models reach n ≥ 30** (or the only model does), so the ranking is never between one adequately sampled model and a guess. The chosen step, the constraint actually applied, and the relaxed dimensions are all in the JSON and on the page.
+- Precip cells additionally need `min_events` (10) observed events at the lowest threshold before a step is accepted; a dry-spell cell with zero events would otherwise crown a model on CSI = 0.
 - Leads for Trust Today: `fxx ≤ 24`, both modes.
 - The analysis window for aggregates is 12 months (`--months`), recomputed every run. Recomputing everything is simpler and safer than tracking "affected" aggregates; it takes seconds at this data volume.
 

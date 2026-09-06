@@ -125,6 +125,7 @@ lead_bins:            # (lo, hi]; fxx 0 falls in the first bin
 
 precip_thresholds_in: [0.01, 0.10, 0.25]
 min_n: 30
+min_events: 10        # precip cells also need this many observed events at the lowest threshold
 
 qc:
   range:                      # physical plausibility, in storage units

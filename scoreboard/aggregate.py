@@ -101,7 +101,18 @@ def trust_cell(pairs_sv: pd.DataFrame, regime: dict, cfg: Config, mode: str, lea
     """Apply the fallback ladder for one site x var in one mode. Returns the chosen step and ranking."""
     var = pairs_sv["var"].iloc[0] if not pairs_sv.empty else None
     min_n = int(cfg.main["min_n"])
+    min_ev = int(cfg.main.get("min_events", 10))
     thr = cfg.main["precip_thresholds_in"]
+
+    def enough(c: dict) -> bool:
+        if c.get("n", 0) < min_n:
+            return False
+        if var in PRECIP_VARS:
+            t = c.get("thr", {})
+            k0 = sorted(t)[0] if t else None
+            return bool(k0) and t[k0]["events"] >= min_ev
+        return True
+
     p = pairs_sv[pairs_sv["fxx"] <= lead_max_h]
     compared = sorted(p["model"].unique().tolist())
     if mode == "fair" and not p.empty:
@@ -119,7 +130,7 @@ def trust_cell(pairs_sv: pd.DataFrame, regime: dict, cfg: Config, mode: str, lea
             st = metrics.cell_stats(g, var, thr)
             cells.append({"model": model, **st})
         ranked = rank_models(cells, var)
-        n_ok = sum(1 for c in ranked if c.get("n", 0) >= min_n)
+        n_ok = sum(1 for c in ranked if enough(c))
         step = {"label": label, "constraint": constraint, "relaxed": [d for d in REGIME_DIMS if d not in dims_eff],
                 "unknown_dims": unknown, "models": ranked, "n_models_ok": n_ok}
         result["steps"].append({"label": label, "n_models_ok": n_ok, "n_best": ranked[0]["n"] if ranked else 0})
@@ -138,7 +149,7 @@ def trust_cell(pairs_sv: pd.DataFrame, regime: dict, cfg: Config, mode: str, lea
     result.update(winner=top["model"], models=chosen["models"], label=chosen["label"], constraint=chosen["constraint"],
                   relaxed=chosen["relaxed"], unknown_dims=chosen["unknown_dims"], margin=margin,
                   runner_up=chosen["models"][1]["model"] if len(chosen["models"]) > 1 else None,
-                  insufficient=top.get("n", 0) < min_n)
+                  insufficient=not enough(top))
     return result
 
 
