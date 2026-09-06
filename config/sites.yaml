@@ -41,10 +41,9 @@ sites:
     notes: The fog / marine site.
   CAMPUS:
     name: Riverdale campus (ZentraCloud z6-27968)
-    # PLACEHOLDER: Manhattan College Riverdale campus centroid. VERIFY and replace with the logger's true position.
-    lat: 40.8898
-    lon: -73.9010
-    elev_m: 50   # PLACEHOLDER; used to reduce station pressure to MSLP. Verify.
+    lat: 40.8980559
+    lon: -73.8995862
+    elev_m: 53   # used to reduce station pressure to MSLP
     obs: zentra
     flow: {onshore: [150, 210], offshore: [280, 10]}
     notes: ATMOS-41 on port 1; TEROS 10 water content on ports 3 and 5 (depths unknown). No sky obs.

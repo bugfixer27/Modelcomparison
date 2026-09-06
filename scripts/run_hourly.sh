@@ -8,5 +8,7 @@ export PATH="/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:$PATH"
 LOCK="$ROOT/store/.run.lock"
 if [ -e "$LOCK" ] && kill -0 "$(cat "$LOCK" 2>/dev/null)" 2>/dev/null; then echo "run already in progress"; exit 0; fi
 echo $$ > "$LOCK"
-trap 'rm -f "$LOCK"' EXIT
-exec "$ROOT/.venv/bin/python" -m scoreboard.run "$@"
+"$ROOT/.venv/bin/python" -m scoreboard.run "$@"
+rc=$?
+rm -f "$LOCK"
+exit $rc
