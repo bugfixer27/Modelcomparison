@@ -19,7 +19,7 @@ def git_commit_push(cfg, log, message: str) -> str:
         return subprocess.run(["git", *a], cwd=root, capture_output=True, text=True, check=check)
     if not (root / ".git").exists():
         return "no git repo"
-    paths = ["site/data"]
+    paths = ["docs/data"]
     store_mb = sum(p.stat().st_size for p in cfg.store.rglob("*.parquet")) / 1e6
     if store_mb < 100:
         paths.append(str(cfg.store.relative_to(root)))

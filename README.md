@@ -11,7 +11,7 @@ config/sites.yaml        sites (+ flow sectors), regime thresholds     <- add a 
 .env                     ZENTRA_TOKEN, ZENTRA_DEVICE_SN, GIT_REMOTE
 scoreboard/              python package (see below)
 store/                   obs/{site}/{year}.parquet, fcst/{model}/{site}/{y}-{m}.parquet, manifest.sqlite, logs/
-site/                    static pages + site/data/*.json (pre-aggregated, < 1 MB each)
+docs/                    static pages (GitHub Pages source: main, /docs) + docs/data/*.json (pre-aggregated, < 1 MB each)
 scripts/                 verify_one_value.py, acceptance.py, eval_hrrr_zarr.py, run_hourly.sh, install_launchd.sh
 launchd/                 com.scoreboard.run.plist template
 tests/                   pytest suite (native-step guard, regimes, QC, metrics, precip buckets, health gap)
@@ -32,7 +32,7 @@ cp .env.example .env   # fill in ZENTRA_TOKEN / ZENTRA_DEVICE_SN / GIT_REMOTE
 .venv/bin/python -m scoreboard.backfill --phase B  # HRRR (via HRRR-Zarr) + NAM-3km, 00/12z, 12 months
 .venv/bin/python -m scoreboard.backfill --phase C  # GFS 12 months, IFS from 2024-02-01, AIFS from 2024-06-01
 scripts/install_launchd.sh                         # hourly launchd agent (catches up after sleep)
-python3 -m http.server 8791 --directory site       # local preview of the pages
+python3 -m http.server 8791 --directory docs       # local preview of the pages
 ```
 Backfills are manifest-driven; kill and restart them freely. `--models`, `--start`, `--end`, `--retry-missing`, `--hrrr-source grib` are available.
 
@@ -47,7 +47,7 @@ Backfills are manifest-driven; kill and restart them freely. `--models`, `--star
 | `extract` | Herbie GRIB subset → nearest grid point → rows; precip bucket/cumulative differencing |
 | `extract_zarr` | HRRR-Zarr backfill path (backfill only) |
 | `metrics` | matched pairs, lead bins, cells, contingency, fair-comparison mask |
-| `aggregate` | Trust Today ladder, explorer slices, series, meta → `site/data/*.json` |
+| `aggregate` | Trust Today ladder, explorer slices, series, meta → `docs/data/*.json` |
 | `health` | coverage matrices, gaps, last-success, errors |
 | `run`, `backfill` | entry points |
 

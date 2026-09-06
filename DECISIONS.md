@@ -43,7 +43,7 @@ Storage/display units follow the METAR convention the user forecasts in: °F, hP
 - Parquet per obs `{site}/{year}` and forecast `{model}/{site}/{year}-{month}`; upsert = read, concat, drop duplicates on natural keys keeping the latest `ingested_at`, atomic replace. A per-file `flock` protects against the hourly run and a backfill writing the same month concurrently.
 - Timestamps are normalised to one UTC tz object on every read; pandas 4 treats `zoneinfo.UTC` and `datetime.timezone.utc` as *different* time zones in `date_range`/joins, which bit the health module until normalised.
 - The manifest is SQLite (`fcst_jobs`, `obs_jobs`, `gridpoints`, `runs`, `errors`). Granularity is one row per (model, init, fxx) so a killed backfill loses at most a handful of files.
-- `store/` is committed while under 100 MB (checked at commit time by `run.py`); above that only `site/data/` is committed.
+- `store/` is committed while under 100 MB (checked at commit time by `run.py`); above that only `docs/data/` is committed.
 
 ## Regimes
 - Derived from obs only. `flow`: calm decided by **speed alone** (< 3 kt) because METARs omit direction when calm; direction absent with speed ≥ 3 kt (METAR `VRB`) is `other`; both absent is `unknown`. Sectors from `config/sites.yaml`; a sector edit re-tags at the next aggregate with no download (test `test_sector_change_retags_without_refetch`).
@@ -67,7 +67,7 @@ Storage/display units follow the METAR convention the user forecasts in: °F, hP
 
 ## Scheduling
 - launchd `StartInterval=3600` with `RunAtLoad`. launchd coalesces intervals missed during sleep into a single run at wake, which is the desired catch-up. A pid lock file in `scripts/run_hourly.sh` prevents overlapping runs. Install: `scripts/install_launchd.sh`.
-- Git: commits whenever `site/data` (or `store/`) changed; pushes only if `GIT_REMOTE` is set in `.env`. No remote was supplied, so pushes are off until it is.
+- Git: commits whenever `docs/data` (or `store/`) changed; pushes only if `GIT_REMOTE` is set in `.env`. No remote was supplied, so pushes are off until it is.
 
 ## Soil moisture (not shipped)
 The campus logger has **two TEROS 10 water-content probes (ports 3 and 5) and two TEROS 21 matric-potential probes (ports 2 and 4)** — so soil moisture is measurable — but the API does not report **installation depths**, and the two readings (0.029 and 0.079 m³/m³ on 2025-09-04) cannot be assigned to 0–10 cm and 10–40 cm without that. HRRR (0–1/1–4/4–10/10–30 cm) would need a thickness-weighted 0–10 cm mean from its top three layers and 10–30 cm standing in for 10–40; NAM/GFS map 1:1. The obs side is wired (`soilm.enabled`, `soilm.port_depth` in config) and the model side is not built. **Ship without it.** To enable later: fill `port_depth` (e.g. `{3: "0_10", 5: "10_40"}`), set `enabled: true`, and add `soilm` fields to the model registry.

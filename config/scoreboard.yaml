@@ -1,7 +1,7 @@
 # Everything a human might tune lives here (plus secrets in .env).
 paths:
   store: store
-  site_data: site/data
+  site_data: docs/data
   herbie_cache: .cache/herbie      # transient GRIB subsets; deleted after extraction
 
 # Storage/display units. Obs and forecasts are converted to these at ingest.
