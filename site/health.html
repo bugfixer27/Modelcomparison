@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Health · Point Verification</title><link rel="stylesheet" href="assets/style.css"></head>
+<body><header></header>
+<main>
+  <div class="grid2">
+    <div><h2>last successful ingest per source</h2><div class="scroll"><table id="last"></table></div></div>
+    <div><h2>recent runs</h2><div class="scroll"><table id="runs"></table></div></div>
+  </div>
+  <h2>forecast file coverage · model × month <span class="mute">(files ok / expected cycles × leads)</span></h2>
+  <div class="scroll"><table id="fcov"></table></div>
+  <h2>obs coverage · site × month <span class="mute">(hours with QC-good T / hours elapsed)</span></h2>
+  <div class="scroll"><table id="ocov"></table></div>
+  <h2>matched-pair coverage · model × site × month <span class="mute">(stored T forecasts that found a QC-good ob)</span></h2>
+  <div class="scroll"><table id="pcov"></table></div>
+  <div class="grid2">
+    <div><h2>open forecast gaps <span class="mute" id="fgap-n"></span></h2><div class="scroll"><table id="fgaps"></table></div></div>
+    <div><h2>open obs gaps <span class="mute" id="ogap-n"></span></h2><div class="scroll"><table id="ogaps"></table></div></div>
+  </div>
+  <h2>recent errors</h2>
+  <div class="scroll"><table id="errs"></table></div>
+  <p class="note">A cycle is a gap when fewer than half its lead files are stored; an obs day is a gap with fewer than 12 QC-good hours. Gaps inside the archive span are reported until filled; the backfill and hourly run are both driven by the same manifest, so rerunning either closes them if the upstream data exists.</p>
+</main>
+<script src="assets/common.js"></script>
+<script src="assets/health.js"></script>
+</body></html>

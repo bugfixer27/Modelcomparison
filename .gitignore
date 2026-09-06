@@ -1,0 +1,10 @@
+.venv/
+.env
+.cache/
+__pycache__/
+*.pyc
+.pytest_cache/
+store/logs/
+store/manifest.sqlite-journal
+.DS_Store
+*.lock

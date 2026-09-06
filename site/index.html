@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trust Today · Point Verification</title><link rel="stylesheet" href="assets/style.css"></head>
+<body><header></header>
+<main>
+  <div class="controls">
+    <label>Comparison <span class="toggle"><button id="mode-fair" class="on">fair</button><button id="mode-all">all data</button></span></label>
+    <span class="note" id="mode-note" style="margin:0"></span>
+  </div>
+  <div class="scroll"><table class="trust" id="grid"></table></div>
+  <div id="detail"></div>
+  <p class="note">Each cell: model ranked best in the site's <b>current regime</b> at leads 0–24 h, its mean bias (forecast − obs, sign shown; <span class="warm">warm</span>/<span class="cool">cool</span>), MAE, sample size n, and the winner's margin over second place. Precipitation is scored as an event (CSI / POD / FAR / frequency bias at 0.01″), never as a seasonal total. Grey = n below threshold. The line under each cell states exactly which regime constraints the number is conditioned on; when the full regime has too few samples the ladder relaxes sky → flow → season → (day/night only) → all, and says so. Click a cell for the full ranking.</p>
+</main>
+<script src="assets/common.js"></script>
+<script src="assets/index.js"></script>
+</body></html>

@@ -1,0 +1,160 @@
+# Everything a human might tune lives here (plus secrets in .env).
+paths:
+  store: store
+  site_data: site/data
+  herbie_cache: .cache/herbie      # transient GRIB subsets; deleted after extraction
+
+# Storage/display units. Obs and forecasts are converted to these at ingest.
+units:
+  t2m: degF
+  td2m: degF
+  rh2m: pct
+  vis: mi        # statute miles, capped at vis_cap_mi on both sides
+  mslp: hPa
+  precip1h: in
+  precip3h: in
+  precip6h: in
+  soilm_0_10: m3m3
+  soilm_10_40: m3m3
+vis_cap_mi: 10.0
+
+variables:            # order = column order in the UI
+  - t2m
+  - td2m
+  - rh2m
+  - mslp
+  - vis
+  - precip1h
+  - precip3h
+  - precip6h
+
+# Model registry. Add a model here; the extractor reads `fields` to know which GRIB records to pull.
+# fxx: either {start, stop, step} or an explicit list. precip_window_h is the model's native precip period.
+# precip_kind: bucket (NCEP APCP with resetting buckets) | cumulative (ECMWF tp since init).
+models:
+  hrrr:
+    enabled: true
+    label: HRRR
+    herbie: {model: hrrr, product: sfc}
+    cycles: [0, 6, 12, 18]
+    backfill_cycles: [0, 12]
+    fxx: {start: 1, stop: 48, step: 1}
+    precip_window_h: 1
+    precip_kind: bucket
+    fields:
+      t2m: ":TMP:2 m above ground:"
+      td2m: ":DPT:2 m above ground:"
+      mslp: ":MSLMA:mean sea level:"
+      vis: ":VIS:surface:"
+      precip: ":APCP:surface:"
+      elev: ":HGT:surface:"
+    backfill_start: null      # null = trailing 12 months
+  nam3km:
+    enabled: true
+    label: NAM-3km
+    herbie: {model: nam, product: conusnest.hiresf}
+    cycles: [0, 6, 12, 18]
+    backfill_cycles: [0, 12]
+    fxx: {start: 1, stop: 60, step: 1}
+    precip_window_h: 1
+    precip_kind: bucket
+    fields:
+      t2m: ":TMP:2 m above ground:"
+      td2m: ":DPT:2 m above ground:"
+      mslp: ":PRMSL:mean sea level:"
+      vis: ":VIS:surface:"
+      precip: ":APCP:surface:"
+      elev: ":HGT:surface:"
+    backfill_start: null
+  gfs:
+    enabled: true
+    label: GFS
+    herbie: {model: gfs, product: pgrb2.0p25}
+    cycles: [0, 12]
+    backfill_cycles: [0, 12]
+    fxx: {start: 0, stop: 120, step: 3}
+    precip_window_h: 3
+    precip_kind: bucket
+    fields:
+      t2m: ":TMP:2 m above ground:"
+      td2m: ":DPT:2 m above ground:"
+      mslp: ":PRMSL:mean sea level:"
+      vis: ":VIS:surface:"
+      precip: ":APCP:surface:"
+      elev: ":HGT:surface:"
+    backfill_start: null
+  ifs:
+    enabled: true
+    label: IFS
+    herbie: {model: ifs, product: oper}
+    cycles: [0, 12]
+    backfill_cycles: [0, 12]
+    fxx: {start: 0, stop: 144, step: 3}
+    precip_window_h: 3
+    precip_kind: cumulative
+    fields:
+      t2m: ":2t:"
+      td2m: ":2d:"
+      mslp: ":msl:"
+      precip: ":tp:"
+    backfill_start: "2024-02-01"
+  aifs:
+    enabled: true
+    label: AIFS
+    herbie: {model: aifs, product: oper}
+    cycles: [0, 12]
+    backfill_cycles: [0, 12]
+    fxx: {start: 0, stop: 144, step: 6}
+    precip_window_h: 6
+    precip_kind: cumulative
+    fields:
+      t2m: ":2t:"
+      td2m: ":2d:"
+      mslp: ":msl:"
+      precip: ":tp:"
+    backfill_start: "2024-06-01"
+  # Registry hook for later: nbm / ndfd entries go here (not in v1).
+
+lead_bins:            # (lo, hi]; fxx 0 falls in the first bin
+  - [0, 6]
+  - [6, 12]
+  - [12, 24]
+  - [24, 48]
+  - [48, 96]
+  - [96, 144]
+
+precip_thresholds_in: [0.01, 0.10, 0.25]
+min_n: 30
+
+qc:
+  range:                      # physical plausibility, in storage units
+    t2m: [-40, 125]
+    td2m: [-50, 90]
+    rh2m: [1, 100]
+    vis: [0, 10]
+    mslp: [940, 1060]
+    precip1h: [0, 5]
+    wspd: [0, 120]
+    wdir: [0, 360]
+  spike:                      # max plausible absolute hour-over-hour change
+    t2m: 20
+    td2m: 20
+    mslp: 8
+  flatline_hours: 6           # identical value across >= N consecutive hours
+  flatline_vars: [t2m, td2m, mslp]
+
+trailing:
+  obs_hours: 72
+  fcst_hours: 96
+
+series_leads_h: [6, 12, 24, 48]
+series_days: 14
+
+soilm:
+  enabled: false
+  # ZentraCloud port -> target depth mapping; fill in once probe depths are known.
+  port_depth: {}              # e.g. {3: "0_10", 5: "10_40"}
+
+git:
+  auto_commit: true
+  auto_push: true             # only if GIT_REMOTE is set in .env and remote 'origin' exists

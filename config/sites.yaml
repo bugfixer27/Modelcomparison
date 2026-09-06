@@ -1,0 +1,55 @@
+# Sites. Adding a site requires only an entry here.
+# obs: asos  -> IEM ASOS service, field `asos_id` is the IEM station id (with or without leading K)
+# obs: zentra -> ZentraCloud logger, device SN + token come from .env
+# flow sectors are [start_deg, end_deg] clockwise (wrapping through 360 allowed). Wind < calm_kt -> calm.
+sites:
+  KNYC:
+    name: Central Park, NYC
+    lat: 40.7789
+    lon: -73.9692
+    elev_m: 27
+    obs: asos
+    asos_id: NYC
+    flow: {onshore: [150, 210], offshore: [280, 10]}
+    notes: Urban park; model grid box will be badly mismatched with the park microclimate. Expected.
+  KLGA:
+    name: LaGuardia
+    lat: 40.7794
+    lon: -73.8803
+    elev_m: 3
+    obs: asos
+    asos_id: LGA
+    flow: {onshore: [150, 210], offshore: [280, 10]}
+    notes: Waterfront, sea-breeze sensitive.
+  KEWR:
+    name: Newark
+    lat: 40.6825
+    lon: -74.1694
+    elev_m: 3
+    obs: asos
+    asos_id: EWR
+    flow: {onshore: [150, 210], offshore: [280, 10]}
+    notes: Inland comparison to KLGA.
+  KWST:
+    name: Westerly State Airport, RI
+    lat: 41.3497
+    lon: -71.7961
+    elev_m: 25
+    obs: asos
+    asos_id: WST
+    flow: {onshore: [140, 230], offshore: [290, 20]}
+    notes: The fog / marine site.
+  CAMPUS:
+    name: Riverdale campus (ZentraCloud z6-27968)
+    # PLACEHOLDER: Manhattan College Riverdale campus centroid. VERIFY and replace with the logger's true position.
+    lat: 40.8898
+    lon: -73.9010
+    elev_m: 50   # PLACEHOLDER; used to reduce station pressure to MSLP. Verify.
+    obs: zentra
+    flow: {onshore: [150, 210], offshore: [280, 10]}
+    notes: ATMOS-41 on port 1; TEROS 10 water content on ports 3 and 5 (depths unknown). No sky obs.
+
+regimes:
+  calm_kt: 3
+  daynight: {day_min_elev_deg: 10, night_max_elev_deg: -6}
+  wet_threshold_in: 0.005

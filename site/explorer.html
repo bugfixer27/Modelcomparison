@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Explorer · Point Verification</title><link rel="stylesheet" href="assets/style.css"></head>
+<body><header></header>
+<main>
+  <div class="controls">
+    <label>site <select id="site"></select></label>
+    <label>var <select id="var"></select></label>
+    <label>mode <span class="toggle"><button id="mode-fair" class="on">fair</button><button id="mode-all">all</button></span></label>
+    <label>sky <select id="f-sky"></select></label>
+    <label>flow <select id="f-flow"></select></label>
+    <label>day/night <select id="f-daynight"></select></label>
+    <label>season <select id="f-season"></select></label>
+    <label>wet <select id="f-wet"></select></label>
+    <label>month <select id="f-month"></select></label>
+    <label id="thr-label" hidden>threshold <select id="f-thr"></select></label>
+  </div>
+  <div class="note" id="status"></div>
+  <h2 id="heat-title"></h2>
+  <div class="scroll"><table class="heat" id="heat"></table></div>
+  <div class="legend" id="legend"></div>
+  <h2 id="bar-title"></h2>
+  <div class="chartbox"><canvas id="bars"></canvas></div>
+  <p class="note">Regime slices are pre-aggregated: any single dimension, or any two dimensions together (month only on its own). A third filter greys out. Cells with n below the threshold are shown in grey with n visible; nothing is hidden. Fair mode restricts every model to the valid times at which all compared models have a forecast in that lead bin.</p>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="assets/common.js"></script>
+<script src="assets/explorer.js"></script>
+</body></html>

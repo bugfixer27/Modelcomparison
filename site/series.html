@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Series · Point Verification</title><link rel="stylesheet" href="assets/style.css"></head>
+<body><header></header>
+<main>
+  <div class="controls">
+    <label>site <select id="site"></select></label>
+    <label>var <select id="var"></select></label>
+    <label>lead <select id="lead"></select></label>
+  </div>
+  <div class="note" id="status"></div>
+  <div class="chartbox" style="height:380px"><canvas id="ts"></canvas></div>
+  <div class="scroll"><table id="tbl"></table></div>
+  <p class="note">Last 14 days. Obs in white (hollow = QC-flagged, excluded from metrics). Each model drawn at one fixed lead: the value forecast for that hour by the run initialized <em>lead</em> hours earlier. Models with a coarser native step have fewer points; nothing is interpolated. A model missing from the legend has no forecast at this lead (not a native step) or no data yet.</p>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="assets/common.js"></script>
+<script src="assets/series.js"></script>
+</body></html>
