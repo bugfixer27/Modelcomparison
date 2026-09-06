@@ -129,7 +129,10 @@ def trust_cell(pairs_sv: pd.DataFrame, regime: dict, cfg: Config, mode: str, lea
         for model, g in sub.groupby("model"):
             st = metrics.cell_stats(g, var, thr)
             cells.append({"model": model, **st})
-        ranked = rank_models(cells, var)
+        # under-sampled models are listed (greyed on the page) but can never win the cell
+        ranked = rank_models([c for c in cells if enough(c)], var) + rank_models([c for c in cells if not enough(c)], var)
+        for c in ranked:
+            c["eligible"] = enough(c)
         n_ok = sum(1 for c in ranked if enough(c))
         step = {"label": label, "constraint": constraint, "relaxed": [d for d in REGIME_DIMS if d not in dims_eff],
                 "unknown_dims": unknown, "models": ranked, "n_models_ok": n_ok}

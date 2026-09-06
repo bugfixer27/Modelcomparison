@@ -56,6 +56,7 @@ Storage/display units follow the METAR convention the user forecasts in: °F, hP
 - Explorer regime slices are pre-aggregated for any single dimension (incl. month) and any pair of dimensions. A third simultaneous filter is disabled in the UI rather than served — full 5-way crossing would be ~1 M cells.
 - Trust Today ladder: full regime → drop sky → drop flow → drop season → day/night only → all. A step is accepted when **≥ 2 models reach n ≥ 30** (or the only model does), so the ranking is never between one adequately sampled model and a guess. The chosen step, the constraint actually applied, and the relaxed dimensions are all in the JSON and on the page.
 - Precip cells additionally need `min_events` (10) observed events at the lowest threshold before a step is accepted; a dry-spell cell with zero events would otherwise crown a model on CSI = 0.
+- Models below `min_n` (or `min_events`) are ranked after every adequately sampled model and can never be the winner; they still appear, greyed, with their n. Without this a model with 18 lucky pairs can top a cell.
 - Leads for Trust Today: `fxx ≤ 24`, both modes.
 - The analysis window for aggregates is 12 months (`--months`), recomputed every run. Recomputing everything is simpler and safer than tracking "affected" aggregates; it takes seconds at this data volume.
 
