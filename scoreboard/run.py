@@ -28,13 +28,15 @@ def git_commit_push(cfg, log, message: str) -> str:
     if not st:
         return "nothing to commit"
     git("commit", "-q", "-m", message)
-    if cfg.main["git"].get("auto_push") and cfg.env.get("GIT_REMOTE"):
+    if cfg.main["git"].get("auto_push"):
         remotes = git("remote", check=False).stdout.split()
-        if "origin" not in remotes:
+        if "origin" not in remotes and cfg.env.get("GIT_REMOTE"):
             git("remote", "add", "origin", cfg.env["GIT_REMOTE"])
-        r = git("push", "-q", "-u", "origin", "HEAD", check=False)
-        return "committed+pushed" if r.returncode == 0 else f"committed; push failed: {r.stderr.strip()[:200]}"
-    return "committed (push disabled or GIT_REMOTE unset)"
+            remotes.append("origin")
+        if "origin" in remotes:
+            r = git("push", "-q", "-u", "origin", "HEAD", check=False)
+            return "committed+pushed" if r.returncode == 0 else f"committed; push failed: {r.stderr.strip()[:200]}"
+    return "committed (no remote 'origin' and GIT_REMOTE unset, or auto_push off)"
 
 
 def fetch_recent_cycles(cfg, store, man, log, models=None, hours=None, stats=None) -> dict:

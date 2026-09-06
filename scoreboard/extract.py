@@ -62,6 +62,8 @@ def _nearest_ij(lat: np.ndarray, lon: np.ndarray, slat: float, slon: float) -> t
 
 
 class Extractor:
+    PRIORITY = ["aws", "google", "azure", "nomads"]
+
     def __init__(self, cfg: Config, store: Store, man: Manifest, stats: Stats | None = None):
         self.cfg, self.store, self.man = cfg, store, man
         self.stats = stats or Stats()
@@ -74,8 +76,9 @@ class Extractor:
         from herbie import Herbie
         hb = self.cfg.main["models"][model]["herbie"]
         self.stats.requests += 1
+        # aws/google/azure/nomads only: UCAR RDA is excluded (SSL certificate failures and slow).
         return Herbie(init.tz_convert(None).to_pydatetime(), model=hb["model"], product=hb["product"], fxx=fxx,
-                      save_dir=str(self.cache_dir), verbose=False)
+                      save_dir=str(self.cache_dir), verbose=False, priority=self.PRIORITY)
 
     def _search_pattern(self, model: str, fxx: int, inv: pd.DataFrame, need_elev: bool, precip_bucket: tuple | None) -> str:
         f = self.cfg.main["models"][model]["fields"]
